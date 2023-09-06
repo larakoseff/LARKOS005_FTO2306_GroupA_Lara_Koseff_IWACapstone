@@ -18,7 +18,9 @@ const range = []
 if (!books && !Array.isArray(books)) throw new Error('Source required')  
 if (!range && range.length < 2) throw new Error('Range must be an array with two numbers')
 
-
+/**
+ * The display can toggle between dark/light modes.
+ */
 
 const day = {
     dark: '10, 10, 20',
@@ -30,27 +32,68 @@ const night = {
     light: '10, 10, 20',
 }
 
+/**
+ * The cover image is displayed in list and preview.
+ */
 
-const createPreview = () => {
 
-const fragment = document.createDocumentFragment()
-const extracted = books.slice(0, 36)
+function createPreview(books) {
+    const fragment = document.createDocumentFragment();
+    const extracted = books.slice(0, 36)
 
-for (let { author, image, title, id } of extracted) {
-  const preview = ({
-    author,
-    id,
-    image,
-    title,
-  });
-  fragment.appendChild(preview);
+    extracted.forEach(book => {
+        const div = document.createElement("div");
+        div.textContent = 
+        `${book.title}
+        ${book.image}
+         ${book.author}`;
+        fragment.appendChild(div);
+    });
+
+    return fragment;
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+    const listContainer = document.querySelector('[data-list-items]')
+    const preview = [
+        { Title: "Title 1", Author: "Description 1" },
+        { Title: "Item 2", Author: "Description 2" },
+        { Title: "Item 2", Author: "Description 2" },
+        { Title: "Item 2", Author: "Description 2" },
+        { Title: "Item 2", Author: "Description 2" },
+        { Title: "Item 2", Author: "Description 2" },
+        { Title: "Item 2", Author: "Description 2" },
+    ];
 
-document.querySelector('[data-list-items]').appendChild(fragment)
+    const listFragment = createPreview(books);
+    listContainer.appendChild(listFragment);
+});
 
-}
 
+// const createPreview = () => {
+
+//     const fragment = document.createDocumentFragment()
+//     const extracted = books.slice(0, 36)
+    
+//     for (let { author, image, title, id } of extracted) {
+//       const preview = ({
+//         author,
+//         id,
+//         image,
+//         title,
+//       });
+//       fragment.appendChild(preview);
+//     }
+    
+    
+//     document.querySelector('[data-list-items]').appendChild(fragment)
+    
+// }
+
+
+/**
+ * The book list can be filtered by genre. 
+ */
 
 const genresSelect = document.createElement('select')
 const allGenresOption = document.createElement('option')
@@ -67,6 +110,9 @@ for (const [id, name] of Object.entries(genres)) {
 
 document.querySelector('[data-search-genres]').appendChild(genresSelect)
 
+/**
+ *  The book list can be filtered by author. 
+ */
 
 const authorsSelect = document.createElement('select')
 const allAuthorsOption = document.createElement('option')
@@ -83,13 +129,18 @@ for (const [id, name] of Object.entries(authors)) {
 
 document.querySelector('[data-search-authors]').appendChild(authorsSelect)
 
+/**
+ *  The display can toggle between dark/light modes.
+ */
+
+
 document.querySelector('[data-settings-theme]').value === window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day'
 const v = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day';
 
 document.documentElement.style.setProperty('--color-dark', night.dark[v]);
 document.documentElement.style.setProperty('--color-light', day.light[v]);
-document.querySelector('[data-list-button]').textContent === "Show more (books.length - BOOKS_PER_PAGE)"
 
+document.querySelector('[data-list-button]').textContent === "Show more (books.length - BOOKS_PER_PAGE)"
 document.querySelector('[data-list-button]').disabled === !(matches.length - [page * BOOKS_PER_PAGE] > 0)
 
 document.querySelector('[data-list-button]').innerHTML === /* html */ [
@@ -99,7 +150,6 @@ document.querySelector('[data-list-button]').innerHTML === /* html */ [
 
 // Create an event handler and listener here? 
 
-document.querySelector('[data-search-cancel]').click(); { document.querySelector('[data-search-overlay]').open === false }
 document.querySelector('[data-settings-cancel]').click(); { document.querySelector('[data-settings-overlay]').open === false }
 
 // Need to resolve: actions is not defined, also this line of code causes terrible throttling in live server
@@ -137,14 +187,23 @@ const searchOverlay =  document.querySelector('[data-search-overlay]')
 const searchTitle = document.querySelector('[data-search-title]')
 
 if (target.hasAttribute('data-header-search')) {
-    searchOverlay.showModal()
+    searchOverlay.show()
     searchTitle.focus()
+}
+
+if (target.hasAttribute('data-search-cancel')) {
+    searchOverlay.close()
+
 }
 
 }
 
 document.querySelector('[data-header-search]').addEventListener('click', handleHeaderSearch)
+document.querySelector('[data-search-cancel]').addEventListener('click', handleHeaderSearch)
 
+/** 
+ * The book list can be filtered by partial matches with the title.
+ */
 
 // Create an event handler and listener here? // Need to resolve: Fliters is used before it is defined
 
@@ -174,6 +233,8 @@ document.querySelector('[data-header-search]').addEventListener('click', handleH
     
 
 // Need to resolve: props is not defined
+
+
 
 // document.querySelector('[data-list-items]').innerHTML === ''
 //     const fragment = document.createDocumentFragment()
@@ -217,6 +278,9 @@ document.querySelector('[data-header-search]').addEventListener('click', handleH
 //     window.scrollTo({ top: 0, behavior: 'smooth' })
 //     data-search-overlay.open === false
 
+/**
+ * The display can toggle between dark/light modes.
+ */
 
 // Create an event handler and listener here? Need to resolve: preventDefault() is not defined
 
