@@ -123,6 +123,76 @@ showMoreButton.innerHTML = /* html */ `
     <span class="list__remaining"> (${remaining})</span>
 `
 
+/**
+ * 
+ * This code creates the book preview
+ * 
+ * @param {event}
+ */
+
+document.querySelector('[data-list-items]').addEventListener('click', (event) => {
+    const pathArray = Array.from(event.path || event.composedPath())
+    let activeBook = null
+  
+    for (const node of pathArray) {
+      const previewId = node?.dataset?.preview
+  
+      if (previewId) {
+        activeBook = books.find((singleBook) => singleBook.id === previewId)
+        break
+      }
+    }
+  }
+  )
+
+
+document.querySelector('[data-list-items]').addEventListener('click', (event) => {
+    const clickedElement = event.target.closest('.preview')
+    
+    if (!clickedElement) {
+      return
+    }
+    
+    const previewId = clickedElement.dataset.preview;
+    const activeBook = books.find((book) => book.id === previewId)
+  
+    if (!activeBook) {
+      return
+    }
+  
+    openOverlay(activeBook);
+  })
+
+  function openOverlay(book) {
+    const overlay = document.querySelector('[data-list-active]')
+    overlay.open = true
+    document.querySelector('[data-list-blur]').src = book.image
+    document.querySelector('[data-list-title]').textContent = book.title
+    document.querySelector('[data-list-subtitle]').textContent = `${authors[book.author]} (${new Date(book.published).getFullYear()})`
+    document.querySelector('[data-list-description]').textContent = book.description
+  }
+
+  document.querySelector('[data-settings-overlay]').addEventListener('submit', (event) => {
+    event.preventDefault()
+    const formData = new FormData(event.target)
+    const result = Object.fromEntries(formData)
+    document.documentElement.style.setProperty('--color-dark', css[result.theme].dark)
+    document.documentElement.style.setProperty('--color-light', css[result.theme].light)
+    document.querySelector('[data-settings-overlay]').open = false
+  })
+
+  document.addEventListener('DOMContentLoaded', () => {
+  
+    document.querySelector('[data-list-close]').addEventListener('click', () => {
+      closeOverlay();
+    });
+  
+    function closeOverlay() {
+      const overlay = document.querySelector('[data-list-active]')
+      overlay.open = false;
+    }
+  });
+
  /**
  * 
  * These are  events to open and close the header search. 
@@ -191,31 +261,6 @@ for (const [id, name] of Object.entries(authors)) {
 
 document.querySelector('[data-search-authors]').appendChild(authorsSelect)
 
-/**
- *  The display can toggle between dark/light modes.
- */
-
-
-// document.querySelector('[data-settings-theme]').value === window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day'
-// const v = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day';
-
-// document.documentElement.style.setProperty('--color-dark', night.dark[v]);
-// document.documentElement.style.setProperty('--color-light', day.light[v]);
-
-
-// Create an event handler and listener here? 
-
-// document.querySelector('[data-settings-cancel]').click(); { document.querySelector('[data-settings-overlay]').open === false }
-
-// Need to resolve: actions is not defined, also this line of code causes terrible throttling in live server
-
-// document.querySelector('[data-settings-form]').submit(); { actions.settings.submit } 
-
-
-
-
-
-
 /** 
  * The book list can be filtered by partial matches with the title.
  */
@@ -246,88 +291,8 @@ document.querySelector('[data-search-authors]').appendChild(authorsSelect)
 //     } else {
 //         data-list-message.classList.remove('list__message_show')
 //     }
-    
-
 
 /**
- * The display can toggle between dark/light modes.
+ *  The display can toggle between dark/light modes.
  */
 
-// Create an event handler and listener here? Need to resolve: preventDefault() is not defined
-
-// document.querySelector('[data-settings-overlay]').submit; {
-//     preventDefault()
-//     const formData = new FormData(event.target)
-//     const result = Object.fromEntries(formData)
-//     document.documentElement.style.setProperty('--color-dark', css[result.theme].dark)
-//     document.documentElement.style.setProperty('--color-light', css[result.theme].light)
-//     data-settings-overlay.open === false
-// }
-
-
-
-document.querySelector('[data-list-items]').addEventListener('click', (event) => {
-    const pathArray = Array.from(event.path || event.composedPath())
-    let activeBook = null
-  
-    for (const node of pathArray) {
-      const previewId = node?.dataset?.preview
-  
-      if (previewId) {
-        activeBook = books.find((singleBook) => singleBook.id === previewId)
-        break
-      }
-    }
-  }
-  )
-
-
-document.querySelector('[data-list-items]').addEventListener('click', (event) => {
-    const clickedElement = event.target.closest('.preview')
-    
-    if (!clickedElement) {
-      return
-    }
-    
-    const previewId = clickedElement.dataset.preview;
-    const activeBook = books.find((book) => book.id === previewId);
-  
-    if (!activeBook) {
-      return
-    }
-  
-    openOverlay(activeBook);
-  })
-
-  function openOverlay(book) {
-    const overlay = document.querySelector('[data-list-active]')
-    overlay.open = true
-    document.querySelector('[data-list-blur]').src = book.image;
-    document.querySelector('[data-list-title]').textContent = book.title;
-    document.querySelector('[data-list-subtitle]').textContent = `${authors[book.author]} (${new Date(book.published).getFullYear()})`;
-    document.querySelector('[data-list-description]').textContent = book.description
-  }
-
-  document.querySelector('[data-settings-overlay]').addEventListener('submit', (event) => {
-    event.preventDefault()
-    const formData = new FormData(event.target);
-    const result = Object.fromEntries(formData);
-    document.documentElement.style.setProperty('--color-dark', css[result.theme].dark);
-    document.documentElement.style.setProperty('--color-light', css[result.theme].light);
-    document.querySelector('[data-settings-overlay]').open = false
-  })
-
-  document.addEventListener('DOMContentLoaded', () => {
-    // Your existing code
-  
-    // Event listener for clicking on the "Close" button within the overlay
-    document.querySelector('[data-list-close]').addEventListener('click', () => {
-      closeOverlay();
-    });
-  
-    // Function to close the overlay
-    function closeOverlay() {
-      const overlay = document.querySelector('[data-list-active]');
-      overlay.open = false;
-    }
-  });
