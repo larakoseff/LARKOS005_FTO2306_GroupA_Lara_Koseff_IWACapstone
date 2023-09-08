@@ -1,9 +1,10 @@
 import { BOOKS_PER_PAGE, books, genres, authors } from "./data.js"
 
-
 /**
  * 
- * The code starts by redeclaring variables for books imported from data.js and declaring an initial varialble for the starting page as well as an array for the range. 
+ * The code starts by redeclaring variables for books imported from data.js and
+ * declaring an initial varialble for the starting page as well as an array for
+ * the range. 
  * 
  */
 
@@ -18,19 +19,6 @@ const range = []
 if (!books && !Array.isArray(books)) throw new Error('Source required')  
 if (!range && range.length < 2) throw new Error('Range must be an array with two numbers')
 
-/**
- * The display can toggle between dark/light modes.
- */
-
-const day = {
-    dark: '10, 10, 20',
-    light: '255, 255, 255',
-}
-
-const night = {
-    dark: '255, 255, 255',
-    light: '10, 10, 20',
-}
 
 /**
  * The cover image is displayed in list and preview.
@@ -56,9 +44,9 @@ for (let i = 0; i < matches.length && booksShown < maxBooksToShow; i++) {
       <h3 class="preview__title">${book.title}</h3>
       <div class="preview__author">${authorName}</div>
     </div>
-  `;
+  `
 
-  fragment.appendChild(element);
+  fragment.appendChild(element)
   booksShown++;
 }
 
@@ -114,10 +102,10 @@ if (currentPage * BOOKS_PER_PAGE >= matches.length) {
 }
 
 /**
- * Adds "showmore +amount" to button // amount incorrect 
+ * Adds "showmore +amount" to button 
  */
 
-const remaining = Math.max(matches.length - currentPage * BOOKS_PER_PAGE, 37)
+const remaining = Math.max(matches.length - currentPage * BOOKS_PER_PAGE, 0)
 showMoreButton.innerHTML = /* html */ `
     <span>Show more</span>
     <span class="list__remaining"> (${remaining})</span>
@@ -125,9 +113,8 @@ showMoreButton.innerHTML = /* html */ `
 
 /**
  * 
- * This code creates the book preview
- * 
- * @param {event}
+ * @param {click} event 
+ * This code createsthe EventListener for the book preview. 
  */
 
 document.querySelector('[data-list-items]').addEventListener('click', (event) => {
@@ -146,6 +133,7 @@ document.querySelector('[data-list-items]').addEventListener('click', (event) =>
   )
 
 
+
 document.querySelector('[data-list-items]').addEventListener('click', (event) => {
     const clickedElement = event.target.closest('.preview')
     
@@ -160,13 +148,20 @@ document.querySelector('[data-list-items]').addEventListener('click', (event) =>
       return
     }
   
-    openOverlay(activeBook);
+    openOverlay(activeBook)
   })
+
+ /**
+  * This funcation creates the individual book preview overlays when single entires on the list are clicked. 
+  * @param {document} book 
+  * 
+  */ 
 
   function openOverlay(book) {
     const overlay = document.querySelector('[data-list-active]')
     overlay.open = true
     document.querySelector('[data-list-blur]').src = book.image
+    document.querySelector('[data-list-image]').src = book.image
     document.querySelector('[data-list-title]').textContent = book.title
     document.querySelector('[data-list-subtitle]').textContent = `${authors[book.author]} (${new Date(book.published).getFullYear()})`
     document.querySelector('[data-list-description]').textContent = book.description
@@ -181,118 +176,154 @@ document.querySelector('[data-list-items]').addEventListener('click', (event) =>
     document.querySelector('[data-settings-overlay]').open = false
   })
 
-  document.addEventListener('DOMContentLoaded', () => {
-  
-    document.querySelector('[data-list-close]').addEventListener('click', () => {
-      closeOverlay();
-    });
-  
-    function closeOverlay() {
-      const overlay = document.querySelector('[data-list-active]')
-      overlay.open = false;
-    }
+document.querySelector('[data-list-close]').addEventListener('click', () => {
+    closeOverlay();
   });
+  
+  function closeOverlay() {
+    const overlay = document.querySelector('[data-list-active]');
+    overlay.open = false;
+  }
 
  /**
  * 
- * These are  events to open and close the header search. 
+ * These are events to open and close the header search. When clicked initially
+ * they ensure that the title, author and genre inputs are reset to "any".
  * 
  * @param {click} event 
+ * This opens the overlay
+ * 
  * @param {click} event 
+ * This closes the overlay
  * 
  */
 
 const handleHeaderSearch = (event) => {
-
-    const { target } = event
-    const searchOverlay =  document.querySelector('[data-search-overlay]')
-    const searchTitle = document.querySelector('[data-search-title]')
-    
+const { target } = event
+  
+const searchOverlay = document.querySelector('[data-search-overlay]')
+const titleInput = searchForm.querySelector('[data-search-title]')
+const authorSelect = searchForm.querySelector('[data-search-authors]')
+const genresSelect = searchForm.querySelector('[data-search-genres]')
+  
+titleInput.value = ''
+authorSelect.value = 'any'
+genresSelect.value = 'any'
+  
     if (target.hasAttribute('data-header-search')) {
-        searchOverlay.show()
-        searchTitle.focus()
+      searchOverlay.showModal()
+      titleInput.focus()
     }
-    
+  
     if (target.hasAttribute('data-search-cancel')) {
-        searchOverlay.close()
-    
+      searchOverlay.close()
     }
-    
-    }
-    
-    document.querySelector('[data-header-search]').addEventListener('click', handleHeaderSearch)
-    document.querySelector('[data-search-cancel]').addEventListener('click', handleHeaderSearch)
+  }
+  
+  document.querySelector('[data-header-search]').addEventListener('click', handleHeaderSearch)
+  document.querySelector('[data-search-cancel]').addEventListener('click', handleHeaderSearch)
 
-/**
- *  The search list can be filtered by genre. 
- */
+ 
 
-const genresSelect = document.createElement('select')
+const overlayDialog = document.querySelector('[data-search-overlay]')
+const searchForm = overlayDialog.querySelector('[data-search-form]')
+const authorSelect = searchForm.querySelector('[data-search-authors]')
+const genresSelect = searchForm.querySelector('[data-search-genres]')
+const titleInput = searchForm.querySelector('[data-search-title]')
+
+const allAuthorsOption = document.createElement('option')
+allAuthorsOption.value = 'any'
+allAuthorsOption.innerText = 'All Authors'
+authorSelect.appendChild(allAuthorsOption)
+
+for (const [authorId, authorName] of Object.entries(authors)) {
+  const authorOption = document.createElement('option')
+  authorOption.value = authorId
+  authorOption.textContent = authorName
+  authorSelect.appendChild(authorOption)
+}
+
 const allGenresOption = document.createElement('option')
 allGenresOption.value = 'any'
 allGenresOption.innerText = 'All Genres'
 genresSelect.appendChild(allGenresOption)
 
-for (const [id, name] of Object.entries(genres)) {
+for (const [genreId, genreName] of Object.entries(genres)) {
   const genreOption = document.createElement('option')
-  genreOption.value = id
-  genreOption.innerText = name
+  genreOption.value = genreId
+  genreOption.textContent = genreName
   genresSelect.appendChild(genreOption)
 }
 
-document.querySelector('[data-search-genres]').appendChild(genresSelect)
 
-/**
- *  The search list can be filtered by author. 
- */
+searchForm.addEventListener('submit', (event) => {
+    event.preventDefault()
+  
+    const formData = new FormData(event.target)
+    const filters = Object.fromEntries(formData)
+    const result = []
 
-const authorsSelect = document.createElement('select')
-const allAuthorsOption = document.createElement('option')
-allAuthorsOption.value = 'any'
-allAuthorsOption.innerText = 'All Authors'
-authorsSelect.appendChild(allAuthorsOption)
+    for (const book of books) { 
+    const titleMatch =
+    filters.title.trim() === '' && book.title.toLowerCase().includes(filters.title.toLowerCase())
+    const authorMatch = filters.author === 'any' || book.author === filters.author
+    let genresMatch = filters.genre === 'any'
+  
+    if (filters.genre !== 'any') {
+        for (const singleGenre of book.genres) {
+          if (singleGenre === filters.genre) {
+            genresMatch = true;
+            break
+          }
+        }
+      }
+  
+      if (titleMatch && authorMatch && genresMatch) {
+        result.push(book)
+      }
+    }
+  
+    if (result.length < 1) {
+      document.querySelector('[data-list-message]').classList.add('list__message_show')
+    } else {
+     document.querySelector('[data-list-message]').classList.remove('list__message_show')
+    }
+  
+    document.querySelector('[data-list-items]').innerHTML = ''
+    const fragment = document.createDocumentFragment()
+    const extracted = result.slice(range[0], range[1])
+  
+    for (const { author, image, title, id } of extracted) {
+      const element = document.createElement('button')
+      element.classList = 'preview'
+      element.setAttribute('data-preview', id)
+  
+      element.innerHTML = /* html */ `
+        <img
+          class="preview__image"
+          src="${image}"
+        />
+  
+        <div class="preview__info">
+          <h3 class="preview__title">${title}</h3>
+          <div class="preview__author">${authors[author]}</div>
+        </div>
+      `
+  
+      fragment.appendChild(element)
+    }
+    
+    document.querySelector('[data-list-items]').appendChild(fragment)
 
-for (const [id, name] of Object.entries(authors)) {
-  const authorOption = document.createElement('option')
-  authorOption.value = id
-  authorOption.innerText = name
-  authorsSelect.appendChild(authorOption)
-}
 
-document.querySelector('[data-search-authors]').appendChild(authorsSelect)
+    titleInput.value = ''
+    authorSelect.value = 'any'
+    genresSelect.value = 'any'
 
-/** 
- * The book list can be filtered by partial matches with the title.
- */
+    overlayDialog.close()
+  
+
+  })
 
 
-// Create an event handler and listener here? // Need to resolve: Fliters is used before it is defined
-
-// document.querySelector('[data-search-form]').click(filters); {
-//     preventDefault()
-//     const formData = new FormData(event.target)
-//     const filters = Object.fromEntries(formData)
-//     result = []
-
-//     for (book; booksList; i++) {
-//         titleMatch = filters.title.trim() = '' && book.title.toLowerCase().includes[filters.title.toLowerCase()]
-//         authorMatch = filters.author = 'any' || book.author === filters.author
-
-//         {
-//             genreMatch = filters.genre = 'any'
-//             for (genre; book.genres; i++) { if (singleGenre === filters.genre) { genreMatch === true }}}
-//         }
-
-//         if (titleMatch && authorMatch && genreMatch) ()=>  result.push(book)
-//     }
-
-//     if (display.length < 1) {
-//         data-list-message.classList.add('list__message_show')
-//     } else {
-//         data-list-message.classList.remove('list__message_show')
-//     }
-
-/**
- *  The display can toggle between dark/light modes.
- */
 
