@@ -1,11 +1,11 @@
 import { BOOKS_PER_PAGE, books, genres, authors } from "./data.js"
 
 /**
- * 
- * The code starts by redeclaring variables for books imported from data.js and
- * declaring an initial varialble for the starting page as well as an array for
- * the range. 
- * 
+ *
+ * The code starts by redeclaring variables for books imported from the object
+ * varables created in data.js above and declaring an initial varialble for the
+ * starting page as well as an array for the range. 
+ *
  */
 
 const matches = books
@@ -13,7 +13,11 @@ const page = 1
 const range = []
 
 /**
- * Here the code is setting conditions for potential errors 
+ * 
+ * Here the code is setting conditions for potential errors utlising thse parameters:
+ * @param {array} - books 
+ * @param {array} - range
+ * 
  */
 
 if (!books && !Array.isArray(books)) throw new Error('Source required')  
@@ -21,11 +25,21 @@ if (!range && range.length < 2) throw new Error('Range must be an array with two
 
 
 /**
- * The cover image is displayed in list and preview.
- */
+ * This code sets up the container for the list of books, in order to present 
+*  each cover image as well as each book and author title. 
+*/
 
 
 const listContainer = document.querySelector('[data-list-items]')
+
+/**
+ * 
+* This creates a document fragment to append multiple elements from HTML.
+* @type {DocumentFragment} 
+*
+*/
+ 
+
 const fragment = document.createDocumentFragment()
 const maxBooksToShow = 36
 let booksShown = 0
@@ -50,21 +64,34 @@ for (let i = 0; i < matches.length && booksShown < maxBooksToShow; i++) {
   booksShown++;
 }
 
-listContainer.appendChild(fragment);
+listContainer.appendChild(fragment)
 
-
-/**
- * The code below creates the functionality for the "Show More" button
- */
 
 let currentPage = page + 1
 
 const showMoreButton = document.querySelector('[data-list-button]')
 
+/**
+ * 
+ * Below is an Event listener for the "Show More" button click event.
+ * This function handles the display of additional books from the list.
+ * @param {click}  
+ * 
+ */
+
+
 showMoreButton.addEventListener('click', () => {
   const listContainer = document.querySelector('[data-list-items]')
   const startIndex = (currentPage - 1) * BOOKS_PER_PAGE
   const endIndex = startIndex + BOOKS_PER_PAGE
+
+/**
+* Below is an if statement to check if there are more books to display as well
+* as a document fragment to append multiple elements to the DOM.
+* @type {DocumentFragment} 
+* This is followed by a loop through the books to display on the current page.
+*
+*/  
 
 if (startIndex < matches.length) {
     const fragment = document.createDocumentFragment()
@@ -72,24 +99,36 @@ for (let i = startIndex; i < endIndex && i < matches.length; i++) {
       const book = matches[i]
       const authorName = authors[book.author]
 
-      const element = document.createElement('button')
-      element.classList.add('preview');
-      element.setAttribute('data-preview', book.id)
+ /**
+* This is a button element representing a book preview, which provides the same
+*  code as above, in order to present each cover image as well as each book and
+*  author title in the context of the Show More button
+* @type {HTMLButtonElement}  Generates the book preview
+*/
 
-      element.innerHTML = /* html */ `
-        <img class="preview__image" src="${book.image}" />
-        <div class="preview__info">
-          <h3 class="preview__title">${book.title}</h3>
-          <div class="preview__author">${authorName}</div>
-        </div>
-      `
+
+const element = document.createElement('button')
+element.classList.add('preview');
+element.setAttribute('data-preview', book.id)
+
+element.innerHTML = /* html */ `
+    <img class="preview__image" src="${book.image}" />
+    <div class="preview__info">
+    <h3 class="preview__title">${book.title}</h3>
+    <div class="preview__author">${authorName}</div>
+    </div>
+    `
       fragment.appendChild(element)
     }
 
 listContainer.appendChild(fragment)
 currentPage++
 
-    if (startIndex + BOOKS_PER_PAGE >= matches.length) {
+/**
+ * The if statements below set up the conditions for when to disable the Show More button.
+ */
+
+if (startIndex + BOOKS_PER_PAGE >= matches.length) {
       showMoreButton.disabled = true
     }
   } else {
@@ -101,10 +140,6 @@ if (currentPage * BOOKS_PER_PAGE >= matches.length) {
   showMoreButton.disabled = true
 }
 
-/**
- * Adds "showmore +amount" to button 
- */
-
 const remaining = Math.max(matches.length - currentPage * BOOKS_PER_PAGE, 0)
 showMoreButton.innerHTML = /* html */ `
     <span>Show more</span>
@@ -114,7 +149,7 @@ showMoreButton.innerHTML = /* html */ `
 /**
  * 
  * @param {click} event 
- * This code createsthe EventListener for the book preview. 
+ * This code creates the EventListener for the book preview once and individual book entry is clicked.  
  */
 
 document.querySelector('[data-list-items]').addEventListener('click', (event) => {
@@ -131,7 +166,6 @@ document.querySelector('[data-list-items]').addEventListener('click', (event) =>
     }
   }
   )
-
 
 
 document.querySelector('[data-list-items]').addEventListener('click', (event) => {
@@ -152,12 +186,16 @@ document.querySelector('[data-list-items]').addEventListener('click', (event) =>
   })
 
  /**
-  * This funcation creates the individual book preview overlays when single entires on the list are clicked. 
-  * @param {document} book 
   * 
+  * This function creates the individual book preview overlays when single
+  * entries on the list are clicked through using by accessing data- attributes within
+ * the HTML using the Document: querySelector() method
+  * method
+  * @param {document} book 
+  *
   */ 
 
-  function openOverlay(book) {
+ const openOverlay = (book) => {
     const overlay = document.querySelector('[data-list-active]')
     overlay.open = true
     document.querySelector('[data-list-blur]').src = book.image
@@ -167,34 +205,29 @@ document.querySelector('[data-list-items]').addEventListener('click', (event) =>
     document.querySelector('[data-list-description]').textContent = book.description
   }
 
-  document.querySelector('[data-settings-overlay]').addEventListener('submit', (event) => {
-    event.preventDefault()
-    const formData = new FormData(event.target)
-    const result = Object.fromEntries(formData)
-    document.documentElement.style.setProperty('--color-dark', css[result.theme].dark)
-    document.documentElement.style.setProperty('--color-light', css[result.theme].light)
-    document.querySelector('[data-settings-overlay]').open = false
-  })
 
 document.querySelector('[data-list-close]').addEventListener('click', () => {
     closeOverlay();
-  });
+  })
   
-  function closeOverlay() {
+/**
+ * 
+ * This function closes the Preview overlay.
+ * 
+ */
+
+  const closeOverlay = () => {
     const overlay = document.querySelector('[data-list-active]');
     overlay.open = false;
   }
 
  /**
  * 
- * These are events to open and close the header search. When clicked initially
+ * These are event handelrs followed by event listerners to open and close the header search. When clicked initially
  * they ensure that the title, author and genre inputs are reset to "any".
  * 
- * @param {click} event 
- * This opens the overlay
- * 
- * @param {click} event 
- * This closes the overlay
+ * @param {click} event  - This opens the Search overlay
+ * @param {click} event  - This closes the Search  overlay
  * 
  */
 
@@ -223,7 +256,16 @@ genresSelect.value = 'any'
   document.querySelector('[data-header-search]').addEventListener('click', handleHeaderSearch)
   document.querySelector('[data-search-cancel]').addEventListener('click', handleHeaderSearch)
 
- 
+
+/**
+ *
+ * The following are a set of variables declared in order to set up the loops
+ * below them for the search functionality and to access data- attributes within
+ * the HTML using the Document: querySelector() method. These set up elements
+ * such as the drop down options, ensure the initial option of "All Authors",
+ * and "All Genres"
+ *
+ */  
 
 const overlayDialog = document.querySelector('[data-search-overlay]')
 const searchForm = overlayDialog.querySelector('[data-search-form]')
@@ -255,6 +297,14 @@ for (const [genreId, genreName] of Object.entries(genres)) {
   genresSelect.appendChild(genreOption)
 }
 
+/**
+ *
+ * This is the final event listener established in order to approapriately
+ * filter individal entries by genre, author as well as partial matches with
+ * the title. It also includes conditions for a message explaining that no
+ * matches were found within the search.
+ *
+ */
 
 searchForm.addEventListener('submit', (event) => {
     event.preventDefault()
@@ -265,7 +315,7 @@ searchForm.addEventListener('submit', (event) => {
 
     for (const book of books) { 
     const titleMatch =
-    filters.title.trim() === '' && book.title.toLowerCase().includes(filters.title.toLowerCase())
+    filters.title.trim() === '' || book.title.toLowerCase().includes(filters.title.toLowerCase())
     const authorMatch = filters.author === 'any' || book.author === filters.author
     let genresMatch = filters.genre === 'any'
   
