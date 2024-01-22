@@ -1,3 +1,4 @@
+
 import { BOOKS_PER_PAGE, books, genres, authors } from "./data.js"
 
 /**
@@ -11,6 +12,8 @@ import { BOOKS_PER_PAGE, books, genres, authors } from "./data.js"
 const matches = books
 const page = 1
 const range = []
+
+
 
 /**
  * 
@@ -81,9 +84,9 @@ const showMoreButton = document.querySelector('[data-list-button]')
 
 
 showMoreButton.addEventListener('click', () => {
-  const listContainer = document.querySelector('[data-list-items]')
-  const startIndex = (currentPage - 1) * BOOKS_PER_PAGE
-  const endIndex = startIndex + BOOKS_PER_PAGE
+const listContainer = document.querySelector('[data-list-items]')
+const startIndex = (currentPage - 1) * BOOKS_PER_PAGE
+const endIndex = startIndex + BOOKS_PER_PAGE
 
 /**
 * Below is an if statement to check if there are more books to display as well
@@ -146,45 +149,6 @@ showMoreButton.innerHTML = /* html */ `
     <span class="list__remaining"> (${remaining})</span>
 `
 
-/**
- * 
- * @param {click} event 
- * This code creates the EventListener for the book preview once and individual book entry is clicked.  
- */
-
-document.querySelector('[data-list-items]').addEventListener('click', (event) => {
-    const pathArray = Array.from(event.path || event.composedPath())
-    let activeBook = null
-  
-    for (const node of pathArray) {
-      const previewId = node?.dataset?.preview
-  
-      if (previewId) {
-        activeBook = books.find((singleBook) => singleBook.id === previewId)
-        break
-      }
-    }
-  }
-  )
-
-
-document.querySelector('[data-list-items]').addEventListener('click', (event) => {
-    const clickedElement = event.target.closest('.preview')
-    
-    if (!clickedElement) {
-      return
-    }
-    
-    const previewId = clickedElement.dataset.preview;
-    const activeBook = books.find((book) => book.id === previewId)
-  
-    if (!activeBook) {
-      return
-    }
-  
-    openOverlay(activeBook)
-  })
-
  /**
   * 
   * This function creates the individual book preview overlays when single
@@ -205,9 +169,21 @@ document.querySelector('[data-list-items]').addEventListener('click', (event) =>
     document.querySelector('[data-list-description]').textContent = book.description
   }
 
-
-document.querySelector('[data-list-close]').addEventListener('click', () => {
-    closeOverlay();
+  document.querySelector('[data-list-items]').addEventListener('click', (event) => {
+    const clickedElement = event.target.closest('.preview')
+    
+    if (!clickedElement) {
+      return
+    }
+    
+    const previewId = clickedElement.dataset.preview;
+    const activeBook = books.find((book) => book.id === previewId)
+  
+    if (!activeBook) {
+      return
+    }
+  
+    openOverlay(activeBook)
   })
   
 /**
@@ -220,6 +196,11 @@ document.querySelector('[data-list-close]').addEventListener('click', () => {
     const overlay = document.querySelector('[data-list-active]');
     overlay.open = false;
   }
+
+
+document.querySelector('[data-list-close]').addEventListener('click', () => {
+  closeOverlay()
+})
 
  /**
  * 
@@ -311,13 +292,13 @@ searchForm.addEventListener('submit', (event) => {
   
     const formData = new FormData(event.target)
     const filters = Object.fromEntries(formData)
-    const result = []
+    const result = [] 
 
     for (const book of books) { 
     const titleMatch =
     filters.title.trim() === '' || book.title.toLowerCase().includes(filters.title.toLowerCase())
     const authorMatch = filters.author === 'any' || book.author === filters.author
-    let genresMatch = filters.genre === 'any'
+    let genresMatch = filters.genre === 'any' 
   
     if (filters.genre !== 'any') {
         for (const singleGenre of book.genres) {
